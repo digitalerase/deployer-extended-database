@@ -32,21 +32,21 @@ Installation
 1) Install package with composer:
    ::
 
-      composer require sourcebroker/deployer-extended-database
+      composer require digitalerase/deployer-extended-database
 
 
 2) Put following lines in your deploy.php:
    ::
 
-      require_once(__DIR__ . '/vendor/sourcebroker/deployer-loader/autoload.php');
+      require_once(__DIR__ . '/vendor/digitalerase/deployer-loader/autoload.php');
       new \SourceBroker\DeployerLoader\Load([
-          ['path' => 'vendor/sourcebroker/deployer-instance/deployer'],
-          ['path' => 'vendor/sourcebroker/deployer-extended-database/deployer'],
+          ['path' => 'vendor/digitalerase/deployer-instance/deployer'],
+          ['path' => 'vendor/digitalerase/deployer-extended-database/deployer'],
       ]);
 
    | IMPORTANT NOTE!
    | Do not put ``require('/vendor/autoload.php')`` inside your deploy.php because you can have dependency problems.
-     Use ``require_once(__DIR__ . '/vendor/sourcebroker/deployer-loader/autoload.php');`` instead as suggested.
+     Use ``require_once(__DIR__ . '/vendor/digitalerase/deployer-loader/autoload.php');`` instead as suggested.
 
 4) Create ".env" file in your project root (where you store deploy.php file). The .env file should be out of
    git because you need to store here information about instance name. Additionally put there info about database
@@ -55,7 +55,7 @@ Installation
    is readable from WWW server level.
    ::
 
-      INSTANCE="local"
+      INSTANCE="development"
 
       DATABASE_HOST="127.0.0.1"
       DATABASE_NAME="database_name"
@@ -65,7 +65,7 @@ Installation
    The INSTANCE must correspond to ``host()`` name. You need to put the .env file with proper INSTANCE name and
    database access data on on each of you instances.
 
-5) Define "local" host and set the "db_databases" for it. Use following code:
+5) Define "development" host and set the "db_databases" for it. Use following code:
    ::
 
       (new \SourceBroker\DeployerExtendedDatabase\Driver\EnvDriver())->getDatabaseConfig()
@@ -73,7 +73,7 @@ Installation
    which will read database data from .env file.
    ::
 
-      host('local')
+      host('development')
           ->set('deploy_path', getcwd())
           ->set('db_databases', [
               'database_default' => [
@@ -81,10 +81,10 @@ Installation
               ]
           ])
 
-6) Add "db_databases" var for all other hosts. For example for live host it can be:
+6) Add "db_databases" var for all other hosts. For example for production host it can be:
    ::
 
-      host('live')
+      host('production')
           ->setHostname('my-server.example.com')
           ->setRemoteUser('deploy')
           ->set('deploy_path', '/var/www/myapplication/')
@@ -97,7 +97,7 @@ Installation
 7) Make sure all instances have the same ``/vendors`` folder with ``deployer-extended-database`` and the same ``deploy.php`` file.
    Most problems are because of differences in ``deploy.php`` file between instances.
 
-8) Run ``dep db:pull live`` to test if all works.
+8) Run ``dep db:pull production`` to test if all works.
 
 Options
 -------
@@ -198,7 +198,7 @@ deploy.php file:
       ]
    ]);
 
-   host('live')
+   host('production')
          ->setHostname('my-server.example.com')
          ->setRemoteUser('deploy')
          ->set('deploy_path', '/var/www/myapplication')
@@ -211,7 +211,7 @@ deploy.php file:
             ]
          );
 
-   host('local')
+   host('development')
          ->set('deploy_path', getcwd())
          ->set('db_databases',
             [
@@ -239,12 +239,12 @@ deploy.php file:
        ]
    );
 
-   host('live')
+   host('production')
        ->setHostname('my-server.example.com')
        ->setRemoteUser('deploy')
        ->set('deploy_path', '/var/www/myapplication/');
 
-   host('local')
+   host('development')
       ->set('deploy_path', getcwd());
 
 
@@ -281,12 +281,12 @@ deploy.php file:
        ]
    );
 
-   host('live')
+   host('production')
        ->setHostname('my-server.example.com')
        ->setRemoteUser('deploy')
        ->set('deploy_path', '/var/www/myapplication/');
 
-   host('local')
+   host('development')
       ->set('deploy_path', getcwd());
 
 The .env file should look then like:
@@ -355,12 +355,12 @@ deploy.php file:
        ]
    );
 
-   host('live')
+   host('production')
        ->setHostname('my-server.example.com')
        ->setRemoteUser('deploy')
        ->set('deploy_path', '/var/www/myapplication/');
 
-   host('local')
+   host('development')
       ->set('deploy_path', getcwd());
 
 
@@ -417,9 +417,9 @@ If releases folder will be detected then it adds info about release in dumpcode 
 **Example**
 ::
 
-   dep db:backup local
-   dep db:backup live
-   dep db:backup live --options=dumpcode:mycode
+   dep db:backup development
+   dep db:backup production
+   dep db:backup production --options=dumpcode:mycode
 
 db:compress
 +++++++++++
@@ -433,7 +433,7 @@ standard gzip compression with your own.
 **Example**
 ::
 
-   dep db:compress live --options=dumpcode:0772a8d396911951022db5ea385535f6
+   dep db:compress production --options=dumpcode:0772a8d396911951022db5ea385535f6
 
 
 db:copy
@@ -448,27 +448,27 @@ In the background it runs several other tasks to accomplish this. Lets assume we
 to dev instance. We will run following command on you local instance:
 ::
 
-   dep db:copy live --options=target:dev
+   dep db:copy production --options=target:staging
 
 Here are the tasks that will be run in background:
 
 In below description:
-   * source instance = live
-   * target instance = dev
-   * local instance = local
+   * source instance = production
+   * target instance = staging
+   * local instance = development
 
-1) First it runs ``dep db:export live --options=dumpcode:123456`` task on source instance. The dumps from export task are stored
+1) First it runs ``dep db:export production --options=dumpcode:123456`` task on source instance. The dumps from export task are stored
    in folder "{{deploy_path}}/.dep/databases/dumps/" on target instance.
 
-2) Then it runs ``db:download live --options=dumpcode:123456`` on local instance to download dump files from live instance from
+2) Then it runs ``db:download production --options=dumpcode:123456`` on local instance to download dump files from live instance from
    folder "{{deploy_path}}/.dep/databases/dumps/" to local instance to folder "{{deploy_path}}/.dep/databases/dumps/".
 
-3) Then it runs ``db:process local --options=dumpcode:123456`` on local instance to make some operations directly on SQL dumps files.
+3) Then it runs ``db:process development --options=dumpcode:123456`` on local instance to make some operations directly on SQL dumps files.
 
-4) Then it runs ``db:upload dev --options=dumpcode:123456`` on local instance. This task takes dump files with code:123456
-   and send it to dev instance and store it in folder "{{deploy_path}}/.dep/databases/dumps/".
+4) Then it runs ``db:upload staging --options=dumpcode:123456`` on local instance. This task takes dump files with code:123456
+   and send it to staging instance and store it in folder "{{deploy_path}}/.dep/databases/dumps/".
 
-5) Finally it runs ``db:import dev --options=dumpcode:123456`` on target instance. This task reads dumps with code:123456 from folder
+5) Finally it runs ``db:import staging --options=dumpcode:123456`` on target instance. This task reads dumps with code:123456 from folder
    "{{deploy_path}}/.dep/databases/dumps/" on dev instance and import it to database.
 
 6) At the very end it removes dumps it just imported in step 5 with command ``db:rmdump dev --options=dumpcode:123456``
@@ -536,7 +536,7 @@ json structure.
 Example task call:
 ::
 
-   dep db:export live
+   dep db:export production
 
 Example output files located in folder {{deploy_path}}/.dep/databases/dumps/:
 ::
@@ -548,7 +548,7 @@ Example output files located in folder {{deploy_path}}/.dep/databases/dumps/:
 Example task call with own dumpcode=
 ::
 
-   dep db:export live --options=dumpcode:mycode
+   dep db:export production --options=dumpcode:mycode
 
 Example output files:
 ::
@@ -565,7 +565,7 @@ There is required option ``--options=dumpcode:[value]`` to be passed.
 **Example**
 ::
 
-   dep db:import dev --options=dumpcode:0772a8d396911951022db5ea385535f66
+   dep db:import staging --options=dumpcode:0772a8d396911951022db5ea385535f66
 
 db:process
 ++++++++++
@@ -576,7 +576,7 @@ directly on sql file before importing. There is required option ``--options=dump
 **Example**
 ::
 
-   dep db:process dev --options=dumpcode:0772a8d396911951022db5ea385535f66
+   dep db:process staging --options=dumpcode:0772a8d396911951022db5ea385535f66
 
 db:pull
 +++++++
@@ -599,7 +599,7 @@ You can also forbid pull to live instance by setting ``db_allow_pull_live`` to `
 **Example**
 ::
 
-   dep db:pull live
+   dep db:pull production
 
 
 db:push
@@ -623,7 +623,7 @@ You can also forbid push to live instance by setting ``db_allow_push_live`` to `
 **Example**
 ::
 
-   dep db:push live
+   dep db:push production
 
 db:rmdump
 +++++++++
@@ -634,7 +634,7 @@ There is required option ``--options=dumpcode:[value]`` to be passed.
 **Example**
 ::
 
-   dep db:rmdump live --options=dumpcode:0772a8d396911951022db5ea385535f66
+   dep db:rmdump production --options=dumpcode:0772a8d396911951022db5ea385535f66
 
 db:truncate
 +++++++++++
@@ -651,7 +651,7 @@ Truncate local instance databases tables.
 Truncate live instance databases tables.
 ::
 
-   dep db:truncate live
+   dep db:truncate production
 
 db:upload
 +++++++++
@@ -663,7 +663,7 @@ There is required option ``--options=dumpcode:[value]`` to be passed.
 **Example**
 ::
 
-   dep db:upload live --options=dumpcode:0772a8d396911951022db5ea385535f6
+   dep db:upload production --options=dumpcode:0772a8d396911951022db5ea385535f6
 
 
 Changelog
