@@ -444,8 +444,8 @@ This command allows you to copy database between instances.
 
    dep db:copy [source-instance] --options=target:[target-instance]
 
-In the background it runs several other tasks to accomplish this. Lets assume we want to copy database from live
-to dev instance. We will run following command on you local instance:
+In the background it runs several other tasks to accomplish this. Lets assume we want to copy database from production
+to staging instance. We will run following command on you local instance:
 ::
 
    dep db:copy production --options=target:staging
@@ -473,7 +473,7 @@ In below description:
 
 6) At the very end it removes dumps it just imported in step 5 with command ``db:rmdump dev --options=dumpcode:123456``
 
-Copy to instance defined in ``instance_live_name`` (default ``live``) is special case.
+Copy to instance defined in ``instance_live_name`` (default ``production``) is special case.
 If you copy to highest instance then by default you will be asked twice if you really want to.
 You can disable asking by setting ``db_allow_copy_live_force`` to ``true``.
 You can also forbid copy to live instance by setting ``db_allow_copy_live`` to ``false``.
@@ -502,7 +502,7 @@ There is required option ``--options=dumpcode:[value]`` to be passed.
 **Example**
 ::
 
-   dep db:download live --options=dumpcode:0772a8d396911951022db5ea385535f6
+   dep db:download production --options=dumpcode:0772a8d396911951022db5ea385535f6
 
 db:dumpclean
 ++++++++++++
@@ -591,7 +591,7 @@ Here is the list of tasks that will be done when you execute "db:pull":
 3) Then it runs `db:process`_ on local instance (with "dumpcode" value from first task).
 4) Then it runs `db:import`_ on local instance (with "dumpcode" value from first task).
 
-Pull to instance defined in ``instance_live_name`` (default ``live``) is special case.
+Pull to instance defined in ``instance_live_name`` (default ``production``) is special case.
 If you pull to highest instance then by default you will be asked twice if you really want to.
 You can disable asking by setting ``db_allow_pull_live_force`` to ``true``.
 You can also forbid pull to live instance by setting ``db_allow_pull_live`` to ``false``.
@@ -615,7 +615,7 @@ Here is the list of tasks that will be done when you execute "db:push":
 3) Then it runs `db:process`_ on remote instance (with "dumpcode" value from first task).
 4) Then it runs `db:import`_ on remote instance (with "dumpcode" value from first task).
 
-Push to instance defined in ``instance_live_name`` (default ``live``) is special case.
+Push to instance defined in ``instance_live_name`` (default ``production``) is special case.
 If you push to highest instance then by default you will be asked twice if you really want to.
 You can disable asking by setting ``db_allow_push_live_force`` to ``true``.
 You can also forbid push to live instance by setting ``db_allow_push_live`` to ``false``.
