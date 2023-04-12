@@ -669,4 +669,4 @@ There is required option ``--options=dumpcode:[value]`` to be passed.
 Changelog
 ---------
 
-See https://github.com/sourcebroker/deployer-extended-database/blob/master/CHANGELOG.rst
+See https://github.com/digitalerase/deployer-extended-database/blob/master/CHANGELOG.rst
